@@ -1,19 +1,24 @@
 local M = {}
 
+-- Function to run the Cypress command
 M.run_cypress_spec = function()
-	local current_file = vim.fn.expand("%:p") -- Get the full path of the current file
+	local current_file = vim.fn.expand("%:p")
 	local command = "npx cypress run --headless --spec " .. current_file
 
-	-- Open a new split at the bottom
+	-- Open a new window at the bottom and switch to it
 	vim.cmd("botright new")
-
-	-- Make the new window a little bigger
 	vim.cmd("resize 10")
 
-	-- Run the command in the terminal in the new window
+	-- Save the buffer number for later use
+	local bufnr = vim.api.nvim_get_current_buf()
+
+	-- Start terminal with the command
 	vim.cmd("term " .. command)
 
-	-- Go back to the previous (original) window
+	-- Auto command to close the buffer with a specific command
+	vim.api.nvim_buf_set_keymap(bufnr, "n", "q", ":bd!<CR>", { noremap = true, silent = true })
+
+	-- Focus back to the previous buffer
 	vim.cmd("wincmd p")
 end
 
